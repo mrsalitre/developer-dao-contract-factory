@@ -1,7 +1,8 @@
 <template>
   <div>
-    <NavBar />
+    <DefaultNavBar />
     <nuxt />
+    <DefaultFooter />
   </div>
 </template>
 <script>
