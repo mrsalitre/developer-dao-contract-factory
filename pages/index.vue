@@ -1,5 +1,7 @@
 <template>
-  <p>lorem ipsum</p>
+  <div class="min-h-screen">
+    <p>lorem ipsum</p>
+  </div>
 </template>
 
 <script>

@@ -8,7 +8,7 @@
           class="no-underline hover:no-underline text-2xl font-bold text-iberinsect flex items-center flex-wrap"
           to="/"
         >
-          <img class="w-12 h-auto inline-block" src="/icon.png" />
+          <img class="w-10 h-auto inline-block" src="/icon.png" />
         </nuxt-link>
         <div class="block lg:hidden">
           <button
@@ -27,7 +27,7 @@
         </div>
       </div>
       <div
-        class="w-full block flex-grow lg:flex lg:items-center lg:w-auto hidden lg:block"
+        class="w-full block flex-grow lg:flex lg:items-center lg:w-auto hidden lg:block text-sm"
       >
         <div
           class="list-reset lg:flex justify-end flex-1 items-center mb-4 lg:mb-0 pl-4 text-iberinsect-dark"
@@ -47,14 +47,15 @@
               {{ menuItem.name }}
             </nuxt-link>
           </div>
+          <button class="bg-gray-100 p-3 hover:bg-gray-300 rounded">Connect Wallet</button>
         </div>
       </div>
       <div
         v-show="showMenu"
-        class="w-full block flex-grow lg:flex lg:items-center lg:w-auto lg:hidden text-iberinsect-dark"
+        class="w-full block flex-grow lg:flex lg:items-center lg:w-auto lg:hidden text-sm"
       >
         <div
-          class="list-reset lg:flex justify-end flex-1 items-center mb-4 lg:mb-0 py-8 pb-12 max-h-screen overflow-y-scroll"
+          class="list-reset lg:flex justify-end flex-1 items-center mb-4 lg:mb-0 py-8 max-h-screen overflow-y-scroll"
           @click.prevent="showMenu = false"
         >
           <div v-for="menuItem in menuItems" :key="`mobile-${menuItem.route}`">
@@ -71,6 +72,7 @@
               {{ menuItem.name }}
             </nuxt-link>
           </div>
+          <button class="bg-gray-100 p-3 hover:bg-gray-300 w-full mt-10">Connect Wallet</button>
         </div>
       </div>
     </div>
