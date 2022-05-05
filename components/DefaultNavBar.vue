@@ -47,7 +47,8 @@
               {{ menuItem.name }}
             </nuxt-link>
           </div>
-          <button class="bg-gray-100 p-3 hover:bg-gray-300 rounded">Connect Wallet</button>
+          <WalletConnect />
+          <!-- <button class="bg-gray-100 p-3 hover:bg-gray-300 rounded">Connect Wallet</button> -->
         </div>
       </div>
       <div
@@ -72,7 +73,7 @@
               {{ menuItem.name }}
             </nuxt-link>
           </div>
-          <button class="bg-gray-100 p-3 hover:bg-gray-300 w-full mt-10">Connect Wallet</button>
+          <WalletConnect />
         </div>
       </div>
     </div>
