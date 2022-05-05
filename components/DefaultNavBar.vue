@@ -1,14 +1,16 @@
 <template>
-  <nav class="fixed w-full z-30 top-0 bg-white shadow">
+  <nav class="fixed w-full z-30 top-0 bg-white text-gray-500" :class="{ 'shadow': showMenu }">
     <div
       class="max-w-screen-xl mx-auto py-2 px-4 sm:px-6 lg:px-8 lg:flex lg:items-center lg:justify-between"
     >
       <div class="flex items-center justify-between">
         <nuxt-link
-          class="no-underline hover:no-underline text-2xl font-bold text-iberinsect flex items-center flex-wrap"
+          class="no-underline hover:no-underline text-xl py-2 font-bold flex items-center flex-wrap"
           to="/"
         >
-          <img class="w-10 h-auto inline-block" src="/icon.png" />
+          <!-- <img class="w-10 h-auto inline-block" src="/icon.png" /> -->
+          Contract Factory
+          <!-- Rocket Ownership -->
         </nuxt-link>
         <div class="block lg:hidden">
           <button
@@ -30,10 +32,10 @@
         class="w-full block flex-grow lg:flex lg:items-center lg:w-auto hidden lg:block text-sm"
       >
         <div
-          class="list-reset lg:flex justify-end flex-1 items-center mb-4 lg:mb-0 pl-4 text-iberinsect-dark"
+          class="list-reset lg:flex justify-end flex-1 items-center"
           @click.prevent="showMenu = false"
         >
-          <div v-for="menuItem in menuItems" :key="menuItem.route">
+          <!-- <div v-for="menuItem in menuItems" :key="menuItem.route">
             <nuxt-link
               :to="menuItem.route"
               class="block py-2 lg:px-4 no-underline hover:text-underline"
@@ -46,9 +48,8 @@
             >
               {{ menuItem.name }}
             </nuxt-link>
-          </div>
-          <WalletConnect />
-          <!-- <button class="bg-gray-100 p-3 hover:bg-gray-300 rounded">Connect Wallet</button> -->
+          </div> -->
+          <WalletConnect class="py-2"/>
         </div>
       </div>
       <div
@@ -56,10 +57,10 @@
         class="w-full block flex-grow lg:flex lg:items-center lg:w-auto lg:hidden text-sm"
       >
         <div
-          class="list-reset lg:flex justify-end flex-1 items-center mb-4 lg:mb-0 py-8 max-h-screen overflow-y-scroll"
+          class="list-reset lg:flex justify-end flex-1 items-center"
           @click.prevent="showMenu = false"
         >
-          <div v-for="menuItem in menuItems" :key="`mobile-${menuItem.route}`">
+          <!-- <div v-for="menuItem in menuItems" :key="`mobile-${menuItem.route}`">
             <nuxt-link
               :to="menuItem.route"
               class="block py-2 lg:px-4 no-underline hover:text-underline"
@@ -72,7 +73,7 @@
             >
               {{ menuItem.name }}
             </nuxt-link>
-          </div>
+          </div> -->
           <WalletConnect />
         </div>
       </div>
