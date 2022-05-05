@@ -1,5 +1,8 @@
 <template>
-  <nav class="fixed w-full z-30 top-0 bg-white text-gray-500" :class="{ 'shadow': showMenu }">
+  <nav
+    class="fixed w-full z-30 top-0 bg-gray-50 text-gray-500"
+    :class="{ shadow: showMenu }"
+  >
     <div
       class="max-w-screen-xl mx-auto py-2 px-4 sm:px-6 lg:px-8 lg:flex lg:items-center lg:justify-between"
     >
@@ -9,7 +12,7 @@
           to="/"
         >
           <!-- <img class="w-10 h-auto inline-block" src="/icon.png" /> -->
-          Contract Factory
+          D_D | Contract Factory
           <!-- Rocket Ownership -->
         </nuxt-link>
         <div class="block lg:hidden">
@@ -49,7 +52,7 @@
               {{ menuItem.name }}
             </nuxt-link>
           </div> -->
-          <WalletConnect class="py-2"/>
+          <WalletConnect class="py-2" />
         </div>
       </div>
       <div

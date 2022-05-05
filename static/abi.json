@@ -1,0 +1,193 @@
+[
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "collection",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "contract_type",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "collection_address",
+            "type": "address"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct STARTHAUSFACTORY.USER_CONTRACT",
+        "name": "newContract",
+        "type": "tuple"
+      }
+    ],
+    "name": "ERC721Created",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "collection_",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "token_",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "owner_",
+        "type": "address"
+      },
+      {
+        "internalType": "string",
+        "name": "customContractURI_",
+        "type": "string"
+      }
+    ],
+    "name": "deployERC721",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "newContract",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "withdraw",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "GENERATED_CONTRACTS",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getContractCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner_",
+        "type": "address"
+      }
+    ],
+    "name": "getUserContracts",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "collection",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "contract_type",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "collection_address",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct STARTHAUSFACTORY.USER_CONTRACT[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

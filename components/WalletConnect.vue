@@ -1,22 +1,24 @@
 <template>
   <button
     v-if="address == null"
-    class="bg-transparent border py-1 px-2 hover:bg-gray-100 w-full md:w-auto rounded"
+    class="bg-transparent border py-2 px-2 w-full md:w-auto rounded shadow-md hover:shadow-none"
     @click="connectWallet()"
   >
-    Connect
+    Connect Wallet
   </button>
   <button
     v-else
-    class="bg-transparent border py-1 px-2 hover:bg-gray-100 w-full md:w-auto rounded"
+    class="bg-transparent border py-2 px-2 w-full md:w-auto rounded shadow-md hover:shadow-none"
     @click="disconnectWallet()"
   >
-    Disconnect
+    Disconnect Wallet
   </button>
 </template>
 <script>
 import { mapState } from 'vuex'
 import { ethers } from 'ethers'
+import abi from '~/static/abi.json'
+
 export default {
   name: 'WalletConnect',
   data() {
@@ -26,7 +28,10 @@ export default {
     }
   },
   computed: {
-    ...mapState({ address: (state) => state.user.accountAddress }),
+    ...mapState({
+      address: (state) => state.user.accountAddress,
+      factoryAddress: (state) => state.factoryAddress,
+    }),
   },
   async mounted() {
     if (this.$web3Modal.cachedProvider) await this.connectWallet()
@@ -36,7 +41,7 @@ export default {
       try {
         this.instance = await this.$web3Modal.connect()
         this.provider = new ethers.providers.Web3Provider(this.instance)
-        
+
         const network = await this.provider.getNetwork()
         await this.checkNetwork(Number(network.chainId))
 
@@ -59,6 +64,7 @@ export default {
         this.instance.on('chainChanged', (chainID) => {
           this.checkNetwork(Number(chainID))
         })
+        await this.setContract()
       } catch (error) {
         console.log(error)
       }
@@ -84,6 +90,25 @@ export default {
           reject(new Error('wrong network'))
         }
       })
+    },
+    async setContract() {
+      if (this.$web3Modal.cachedProvider) {
+        const provider = await this.$web3Modal.connect()
+        const instance = new ethers.providers.Web3Provider(provider)
+        const signer = instance.getSigner()
+        const currentAddress = await signer.getAddress()
+        const factoryContract = new ethers.Contract(
+          this.factoryAddress,
+          abi,
+          signer
+        )
+        this.$store.commit(
+          'user/SET_CONTRACTS',
+          await factoryContract.getUserContracts(currentAddress)
+        )
+      } else {
+        console.log('No cached provider')
+      }
     },
   },
 }
