@@ -1,12 +1,86 @@
 <template>
   <div>
-    <section class="py-8 md:py-12 text-gray-500">
-      <h1 class="text-7xl sm:text-9xl">
-        Gain true ownership of your NFT collection by owning your own smart
-        contract*
-      </h1>
-      <p class="mb-4">*Without having to learn how to program any code.</p>
-      <WalletConnect class="text-2xl md:hidden" />
+    <section v-if="!user" class="flex h-screen">
+      <div class="m-auto text-gray-500">
+        <h1 class="text-7xl md:text-9xl">
+          Gain true ownership of your NFT collection by owning your own smart
+          contracts*
+        </h1>
+        <p class="mb-6 text-sm">
+          *Without having to learn how to program any code.
+        </p>
+      </div>
+    </section>
+    <section
+      v-else-if="user && (!generatedContracts || !generatedContracts.length)"
+      class="flex h-screen"
+    >
+      <div class="m-auto text-center text-gray-500">
+        <h2 class="text-7xl md:text-9xl mb-6">
+          Ready for your first smart contract?
+        </h2>
+        <nuxt-link
+          class="bg-transparent border py-2 px-2 w-full md:w-auto rounded shadow-md hover:shadow-none"
+          to="/create-contract"
+        >
+          Start new contract
+        </nuxt-link>
+      </div>
+    </section>
+    <section v-else-if="user && generatedContracts" class="pt-20">
+      <div>
+        <h2>Select a contract</h2>
+        <ul class="md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-8 md:gap-10">
+          <li
+            v-for="(contract, index) in generatedContracts"
+            :key="index"
+            class="mt-4 shadow z-20"
+          >
+            <div
+              class="flex rounded-lg flex-col justify-between h-full bg-white"
+            >
+              <div>
+                <span>{{ contract[0] }}</span>
+              </div>
+              <div>
+                <p>botones</p>
+              </div>
+            </div>
+          </li>
+        </ul>
+        <!-- <ul class="md:grid md:grid-cols-2 lg:grid-cols-3 md:col-gap-8 md:row-gap-10">
+            <li v-for="(contract, index) in generatedContracts" :key="index" class="shadow">
+              <nuxt-link :to="`/collection-gallery/${contract[2]}`">
+                  <div>
+                    <span>{{ contract[0] }}</span>
+                  </div>
+                  <div class="col-auto">
+                    <nuxt-link
+                      :to="`/edit-generated-721/${contract[2]}`"
+                      class="bg-white border py-2 px-2 w-full md:w-auto rounded shadow-md hover:shadow-none"
+                    >
+                      Edit
+                    </nuxt-link>
+                    <nuxt-link
+                      :to="`/create-nft/${contract[2]}`"
+                      class="bg-white border py-2 px-2 w-full md:w-auto rounded shadow-md hover:shadow-none"
+                    >
+                      Create NFT
+                    </nuxt-link>
+                  </div>
+              </nuxt-link>
+            </li>
+          </ul> -->
+        <p class="text-center py-6"><span>or</span></p>
+        <div class="text-center">
+          <nuxt-link
+            class="bg-white border py-2 px-2 w-full md:w-auto rounded shadow-md hover:shadow-none"
+            to="/create-contract"
+          >
+            Create new contract
+          </nuxt-link>
+        </div>
+      </div>
     </section>
   </div>
 </template>
@@ -23,7 +97,9 @@ export default {
   },
   computed: {
     ...mapState({
+      user: (state) => state.user.accountAddress,
       factoryAddress: (state) => state.factoryAddress,
+      generatedContracts: (state) => state.user.contracts,
     }),
   },
   methods: {
