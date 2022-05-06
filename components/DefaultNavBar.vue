@@ -1,10 +1,11 @@
 <template>
   <nav
     class="fixed w-full z-30 top-0"
-    style="backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  background: rgba(249, 250, 251, 0.4);
-  "
+    style="
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      background: rgba(249, 250, 251, 0.6);
+    "
   >
     <div
       class="text-gray-500 max-w-screen-xl mx-auto py-2 px-4 sm:px-6 lg:px-8 lg:flex lg:items-center lg:justify-between"
