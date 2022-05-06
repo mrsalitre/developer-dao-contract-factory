@@ -1,17 +1,17 @@
 <template>
   <button
     v-if="address == null"
-    class="bg-transparent border py-2 px-2 w-full md:w-auto rounded shadow-md hover:shadow-none"
+    class="bg-white border py-2 px-2 w-full md:w-auto rounded shadow-md hover:shadow-none"
     @click="connectWallet()"
   >
-    Connect Wallet
+    connect wallet
   </button>
   <button
     v-else
-    class="bg-transparent border py-2 px-2 w-full md:w-auto rounded shadow-md hover:shadow-none"
+    class="bg-white bg-transparent border py-2 px-2 w-full md:w-auto rounded shadow-md hover:shadow-none"
     @click="disconnectWallet()"
   >
-    Disconnect Wallet
+    disconnect wallet
   </button>
 </template>
 <script>

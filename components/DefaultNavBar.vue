@@ -1,21 +1,24 @@
 <template>
   <nav
-    class="fixed w-full z-30 top-0 bg-gray-50 text-gray-500"
-    :class="{ shadow: showMenu }"
+    class="fixed w-full z-30 top-0"
+    style="backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background: rgba(249, 250, 251, 0.4);
+  "
   >
     <div
-      class="max-w-screen-xl mx-auto py-2 px-4 sm:px-6 lg:px-8 lg:flex lg:items-center lg:justify-between"
+      class="text-gray-500 max-w-screen-xl mx-auto py-2 px-4 sm:px-6 lg:px-8 lg:flex lg:items-center lg:justify-between"
     >
       <div class="flex items-center justify-between">
         <nuxt-link
-          class="no-underline hover:no-underline text-xl py-2 font-bold flex items-center flex-wrap"
+          class="no-underline hover:no-underline text-xl py-2 flex items-center flex-wrap"
           to="/"
         >
           <!-- <img class="w-10 h-auto inline-block" src="/icon.png" /> -->
           D_D | Contract Factory
           <!-- Rocket Ownership -->
         </nuxt-link>
-        <div class="block lg:hidden">
+        <div v-if="address" class="block lg:hidden">
           <button
             class="flex items-center px-3 py-2 border rounded"
             aria-label="show menu button"
@@ -29,6 +32,9 @@
               <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
             </svg>
           </button>
+        </div>
+        <div v-else class="block lg:hidden">
+          <WalletConnect />
         </div>
       </div>
       <div
@@ -84,6 +90,8 @@
   </nav>
 </template>
 <script>
+import { mapState } from 'vuex'
+
 export default {
   name: 'DefaultNavBar',
   data() {
@@ -102,9 +110,18 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      address: (state) => state.user.accountAddress,
+    }),
     currentRoute() {
       return this.$nuxt.$route.params.uid || this.$nuxt.$route.name
     },
   },
 }
 </script>
+<style>
+.blur-effect {
+  filter: blur(8px);
+  -webkit-filter: blur(8px);
+}
+</style>
