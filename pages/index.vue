@@ -16,7 +16,7 @@
       class="flex h-screen"
     >
       <div class="m-auto text-center text-gray-500">
-        <h2 class="text-7xl md:text-9xl mb-6">
+        <h2 class="text-7xl md:text-9xl mb-6 font-extralight">
           Ready for your first smart contract?
         </h2>
         <nuxt-link
@@ -29,7 +29,7 @@
     </section>
     <section v-else-if="user && generatedContracts" class="pt-20">
       <div>
-        <h2 class="text-2xl text-gray-500 font-light">Select a contract</h2>
+        <h2 class="text-7xl text-gray-500 font-extralight">Select a contract</h2>
         <ul class="md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-8 md:gap-10">
           <li
             v-for="(contract, index) in generatedContracts"

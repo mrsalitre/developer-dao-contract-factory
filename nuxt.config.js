@@ -18,7 +18,7 @@ export default {
   css: [],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: ['~/plugins/web3modal.client.js'],
+  plugins: ['~/plugins/web3modal.client.js', '~/plugins/ipfs.client.js'],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
