@@ -4,14 +4,14 @@
     class="bg-white border py-2 px-2 w-full md:w-auto rounded shadow-md hover:shadow-none"
     @click="connectWallet()"
   >
-    connect wallet
+    Connect Wallet
   </button>
   <button
     v-else
-    class="bg-white bg-transparent border py-2 px-2 w-full md:w-auto rounded shadow-md hover:shadow-none"
+    class="bg-white border py-2 px-2 w-full md:w-auto rounded shadow-md hover:shadow-none"
     @click="disconnectWallet()"
   >
-    disconnect wallet
+    Disconnect Wallet
   </button>
 </template>
 <script>
