@@ -6,14 +6,12 @@
       <div
         class="mt-4 shadow bg-white rounded-lg px-2 py-3 text-gray-500 md:grid md:grid-cols-4 md:gap-2"
       >
-        <div class="col-auto">
+        <div class="col-auto pb-4 md:pb-0">
           <div class="flex flex-col justify-between h-full">
-            <label class="text-xl font-bold text-gray-500"
-              >Image</label
-            >
+            <label class="text-xl font-bold text-gray-500">Image</label>
             <label
               v-if="!previewImage"
-              class="flex flex-col w-full h-36 border-4 rounded border-dashed hover:bg-gray-100 hover:border-gray-300 cursor-pointer"
+              class="flex flex-col w-full h-48 border-4 rounded border-dashed hover:bg-gray-100 hover:border-gray-300 cursor-pointer"
             >
               <div class="flex flex-col items-center justify-center my-auto">
                 <svg
@@ -40,13 +38,13 @@
               v-else
               :src="previewImage"
               alt=""
-              class="h-36 rounded cursor-pointer object-cover"
+              class="h-48 rounded cursor-pointer object-cover"
               @click="previewImage = null"
             />
           </div>
         </div>
         <div class="flex flex-col justify-between h-full col-span-3">
-          <div class="py-2 md:py-0 md:pb-2">
+          <div class="pb-4">
             <label for="collection_name" class="text-xl font-bold text-gray-500"
               >Name</label
             >
@@ -58,23 +56,26 @@
               name="first_name"
             />
           </div>
-          <div class="flex flex-col justify-between h-full">
-            <label for="collection_description" class="text-xl font-bold text-gray-500"
+          <div class="flex flex-col justify-between h-full pb-4 md:pb-0">
+            <label
+              for="collection_description"
+              class="text-xl font-bold text-gray-500"
               >Description</label
             >
             <textarea
               id="collection_description"
               v-model="description"
               type="text"
-              class="border w-full h-full rounded py-2 px-3"
-              name="first_name"
+              class="border w-full h-48 md:h-full rounded py-2 px-3"
             ></textarea>
           </div>
         </div>
         <div class="flex flex-col justify-between h-full md:mt-2 col-span-4">
           <div class="flex flex-wrap">
             <div class="w-full md:w-3/4 pb-4 md:pb-0">
-              <label for="collection_owner" class="text-xl font-bold text-gray-500"
+              <label
+                for="collection_owner"
+                class="text-xl font-bold text-gray-500"
                 >Payee´s Address</label
               >
               <input
@@ -86,7 +87,9 @@
               />
             </div>
             <div class="w-full md:w-1/4 md:pl-2 pb-4 md:pb-0">
-              <label for="collection_royalties" class="text-xl font-bold text-gray-500"
+              <label
+                for="collection_royalties"
+                class="text-xl font-bold text-gray-500"
                 >Royalties</label
               >
               <div class="flex items-center border rounded py-2 px-3">
@@ -105,8 +108,8 @@
         </div>
         <div class="mt-3 col-span-4">
           <button
-            @click="updateCustomContract()"
             class="bg-white border mx-0 mb-0 py-2 px-2 w-full rounded shadow-md hover:shadow-none"
+            @click="updateCustomContract()"
           >
             {{ updatingContract ? 'Updating Contract...' : 'Update Contract' }}
           </button>
@@ -175,8 +178,9 @@ export default {
       this.updatingContract = true
       try {
         await this.uploadContractDataToIPFS()
-        this.contractDeploy =
-          await this.DDFactoryContract.setContractURI(this.contractURI)
+        this.contractDeploy = await this.DDFactoryContract.setContractURI(
+          this.contractURI
+        )
         await this.contractDeploy.wait()
         this.updatingContract = false
       } catch (error) {
