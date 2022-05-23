@@ -104,7 +104,7 @@
         </div>
         <div class="mt-3 col-span-4">
           <button
-            class="bg-white border mx-0 mb-0 py-2 px-2 w-full rounded shadow-md hover:shadow-none"
+            class="bg-white hover:bg-transparent border mx-0 mb-0 py-2 px-2 w-full rounded shadow-md hover:shadow-none"
             @click="updateCustomContract()"
           >
             {{ updatingContract ? 'Updating Contract...' : 'Update Contract' }}
@@ -177,8 +177,9 @@ export default {
         this.contractDeploy = await this.DDFactoryContract.setContractURI(
           this.contractURI
         )
-        await this.contractDeploy.wait()
+        const response = await this.contractDeploy.wait()
         this.updatingContract = false
+        this.$router.push(`/confirm/${response.transactionHash}`)
       } catch (error) {
         console.log(error)
         this.updatingContract = false

@@ -133,7 +133,7 @@
         </div>
         <div class="mt-3 col-span-4">
           <button
-            class="bg-white border mx-0 mb-0 py-2 px-2 w-full rounded shadow-md hover:shadow-none"
+            class="bg-white hover:bg-transparent border mx-0 mb-0 py-2 px-2 w-full rounded shadow-md hover:shadow-none"
             @click="mintNFT()"
           >
             {{ minting ? 'Creating NFT...' : 'Create NFT' }}
@@ -253,8 +253,9 @@ export default {
         await this.setContract()
         await this.uploadNFTDataToIPFS()
         this.contractDeploy = await this.DDFactoryContract.mint(this.listToMint)
-        await this.contractDeploy.wait()
+        const response = await this.contractDeploy.wait()
         this.minting = false
+        this.$router.push(`/confirm/${response.transactionHash}`)
       } catch (error) {
         this.minting = false
       }

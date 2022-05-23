@@ -20,7 +20,7 @@
           Ready to own your first smart contract?
         </h2>
         <nuxt-link
-          class="bg-transparent border py-2 px-2 w-full md:w-auto rounded shadow-md hover:shadow-none"
+          class="bg-white hover:bg-transparent border py-2 px-2 w-full md:w-auto rounded shadow-md hover:shadow-none"
           to="/create-contract"
         >
           Start New Contract
@@ -67,7 +67,7 @@
         <p class="text-center pb-6 md:py-6"><span>or</span></p>
         <div class="text-center mb-8">
           <nuxt-link
-            class="bg-white border text-gray-500 py-2 px-2 w-full md:w-auto rounded shadow-md hover:shadow-none"
+            class="bg-white hover:bg-transparent border text-gray-500 py-2 px-2 w-full md:w-auto rounded shadow-md hover:shadow-none"
             to="/create-contract"
           >
             Create new contract
