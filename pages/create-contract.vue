@@ -144,7 +144,6 @@ export default {
       description: '',
       royalties: 3,
       royaltiesAddress: '',
-      // collectionUrl: '',
       previewImage: '',
       rawImage: undefined,
       contractURI: '',
@@ -202,10 +201,8 @@ export default {
           this.$store.state.user.accountAddress,
           this.contractURI
         )
-        // const response = await this.contractDeploy.wait()
         await this.contractDeploy.wait()
         this.creatingContract = false 
-        // this.$router.push(`/confirm/${response.transactionHash}`)
       } catch (error) {
         console.log(error)
         this.creatingContract = false
@@ -219,7 +216,6 @@ export default {
         name: this.collectionName,
         description: this.description,
         image,
-        // external_link: `${this.collectionUrl}`,
         seller_fee_basis_points: royalties,
         fee_recipient: this.royaltiesAddress,
       }
