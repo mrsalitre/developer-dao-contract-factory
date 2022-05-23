@@ -5,7 +5,7 @@
         <div class="mx-auto px-4 sm:px-6 lg:px-8">
           <div class="sm:text-center lg:text-left py-4">
             <span class="font-semibold">
-              ©2022 Developer DAO + FLOC* collaboration.
+              ©2022 <a href="https://www.developerdao.com/" target="_blank" class="underline">Developer DAO</a> + <a href="https://wearefloc.com/" target="_blank" class="underline">FLOC*</a> + <a href="https://jeanayala.eth.xyz/" target="_blank" class="underline">Jeanayala.eth</a> collaboration.
             </span>
           </div>
         </div>
