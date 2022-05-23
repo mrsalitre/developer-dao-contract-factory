@@ -8,11 +8,9 @@
       >
         <div class="col-auto pb-4 md:pb-0">
           <div class="flex flex-col justify-between h-full">
-            <label for="first_name" class="text-xl font-bold text-gray-500"
-              >Image</label
-            >
+            <label class="text-xl font-bold text-gray-500">Image</label>
             <label
-              v-if="!previewImage"
+              v-if="!previewImage && !previewVideo"
               class="flex flex-col w-full h-48 border-4 rounded border-dashed hover:bg-gray-100 hover:border-gray-300 cursor-pointer"
             >
               <div class="flex flex-col items-center justify-center my-auto">
@@ -34,68 +32,72 @@
                   Select a photo
                 </p>
               </div>
-              <input type="file" class="hidden" @change="uploadImage($event)" />
+              <input
+                type="file"
+                accept="image/*,video/*"
+                class="hidden"
+                @change="uploadImage($event)"
+              />
             </label>
             <img
-              v-else
+              v-if="previewImage"
               :src="previewImage"
               alt=""
               class="h-48 rounded cursor-pointer object-cover"
               @click="previewImage = null"
             />
+            <video
+              v-if="previewVideo"
+              autoplay
+              :src="previewVideo"
+              class="h-48 rounded cursor-pointer object-cover"
+              @click="previewVideo = null"
+            />
           </div>
         </div>
         <div class="flex flex-col justify-between h-full col-span-3">
           <div class="pb-4">
-            <label for="first_name" class="text-xl font-bold text-gray-500"
+            <label for="nft_name" class="text-xl font-bold text-gray-500"
               >Name</label
             >
             <input
-              id="first_name"
-              v-model="collectionName"
+              id="nft_name"
+              v-model="name"
               type="text"
               class="border w-full rounded py-2 px-3"
-              name="first_name"
             />
           </div>
           <div class="flex flex-col justify-between h-full pb-4 md:pb-0">
-            <label for="first_name" class="text-xl font-bold text-gray-500"
+            <label for="nft_description" class="text-xl font-bold text-gray-500"
               >Description</label
             >
             <textarea
-              id="first_name"
+              id="nft_description"
               v-model="description"
               type="text"
               class="border w-full rounded py-2 px-3 h-48 md:h-full"
-              name="first_name"
             ></textarea>
           </div>
         </div>
         <div class="flex flex-col justify-between h-full md:mt-2 col-span-4">
           <div class="flex flex-wrap">
             <div class="w-full pb-4 md:pb-0">
-              <label for="first_name" class="text-xl font-bold text-gray-500"
-                >Properties</label
-              >
+              <label class="text-xl font-bold text-gray-500">Properties</label>
               <div
                 v-for="(propertie, index) in properties"
                 :key="index"
                 class="grid grid-cols-5 gap-2 pb-2"
               >
                 <input
-                  id="first_name"
                   v-model="properties[index].trait_type"
                   type="text"
                   class="border rounded py-2 px-3 col-span-2"
-                  name="first_name"
                   placeholder="Name (eg. Technique)"
                 />
                 <input
-                  id="first_name"
                   v-model="properties[index].value"
                   type="text"
                   class="border rounded py-2 px-3 col-span-2"
-                  name="first_name"
                   placeholder="Value (eg. Accuarela)"
                 />
                 <button
@@ -107,7 +109,6 @@
               </div>
               <div class="grid grid-cols-5 gap-2">
                 <input
-                  id="first_name"
                   v-model="propertieName"
                   type="text"
                   class="border rounded py-2 px-3 col-span-2"
@@ -115,11 +116,9 @@
                   placeholder="Name (eg. Technique)"
                 />
                 <input
-                  id="first_name"
                   v-model="propertieValue"
                   type="text"
                   class="border rounded py-2 px-3 col-span-2"
-                  name="first_name"
                   placeholder="Value (eg. Accuarela)"
                 />
                 <button
@@ -135,8 +134,9 @@
         <div class="mt-3 col-span-4">
           <button
             class="bg-white border mx-0 mb-0 py-2 px-2 w-full rounded shadow-md hover:shadow-none"
+            @click="mintNFT()"
           >
-            Create NFT
+            {{ minting ? 'Creating NFT...' : 'Create NFT' }}
           </button>
         </div>
       </div>
@@ -159,15 +159,15 @@ export default {
       properties: [],
       propertieName: '',
       propertieValue: '',
-      contractURI: [],
       rawImage: undefined,
       previewImage: '',
       previewVideo: '',
       rawVideo: undefined,
       rawCover: null,
       previewCover: null,
-      creatingContract: false,
-      startHausFactoryContract: undefined,
+      minting: false,
+      listToMint: [],
+      DDFactoryContract: undefined,
     }
   },
   computed: {
@@ -181,7 +181,7 @@ export default {
         const provider = await this.$web3Modal.connect()
         const instance = new ethers.providers.Web3Provider(provider)
         const signer = instance.getSigner()
-        this.startHausFactoryContract = new ethers.Contract(
+        this.DDFactoryContract = new ethers.Contract(
           this.$route.params.contract,
           abi,
           signer
@@ -191,7 +191,6 @@ export default {
       }
     },
     async uploadNFTDataToIPFS() {
-      console.log('holis')
       if (this.previewImage) {
         let image = `https://ipfs.io/ipfs/${await this.addToIpfs(
           this.rawImage
@@ -204,30 +203,24 @@ export default {
         }
         const jsonObj = JSON.stringify(metaObj)
         const CID = await this.addToIpfs(jsonObj)
-        // this.contractURI = []
-        this.contractURI.push(`https://ipfs.io/ipfs/${CID}`)
+        this.listToMint.push(`https://ipfs.io/ipfs/${CID}`)
         metaObj = {}
         image = undefined
       } else if (this.previewVideo) {
         let image = `https://ipfs.io/ipfs/${await this.addToIpfs(
           this.rawVideo
         )}`
-        let cover = `https://ipfs.io/ipfs/${await this.addToIpfs(
-          this.rawCover
-        )}`
         let metaObj = {
           name: this.name,
           description: this.description,
           image,
-          cover,
           attributes: this.properties,
         }
         const jsonObj = JSON.stringify(metaObj)
         const CID = await this.addToIpfs(jsonObj)
-        this.contractURI.push(`https://ipfs.io/ipfs/${CID}`)
+        this.listToMint.push(`https://ipfs.io/ipfs/${CID}`)
         metaObj = {}
         image = undefined
-        cover = undefined
       }
     },
     async addToIpfs(content) {
@@ -254,29 +247,16 @@ export default {
         this.previewVideo = URL.createObjectURL(e.target.files[0])
       }
     },
-    uploadCover(e) {
-      console.log(e.target.files[0].type)
-      this.rawCover = e.target.files[0]
-      const reader = new FileReader()
-      reader.readAsDataURL(this.rawCover)
-      reader.onload = (e) => {
-        this.previewCover = e.target.result
-      }
-    },
-    async createCustomContract() {
-      this.creatingContract = true
+    async mintNFT() {
+      this.minting = true
       try {
         await this.setContract()
         await this.uploadNFTDataToIPFS()
-        this.contractDeployed = await this.startHausFactoryContract.mint(
-          this.contractURI
-        )
-        const response = await this.contractDeployed.wait()
-        this.creatingContract = false
-        this.$router.push(`/confirm/${response.transactionHash}`)
+        this.contractDeploy = await this.DDFactoryContract.mint(this.listToMint)
+        await this.contractDeploy.wait()
+        this.minting = false
       } catch (error) {
-        this.creatingContract = false
-        this.contractURI = []
+        this.minting = false
       }
     },
     addProperties() {

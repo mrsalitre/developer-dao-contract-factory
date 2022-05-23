@@ -54,7 +54,6 @@
                 v-model="collectionName"
                 type="text"
                 class="border w-full rounded py-2 px-3"
-                name="first_name"
               />
             </div>
             <div class="w-full md:w-1/3 md:pl-2 pb-4">
@@ -99,7 +98,6 @@
                 v-model="royaltiesAddress"
                 type="text"
                 class="border w-full rounded py-2 px-3"
-                name="first_name"
               />
             </div>
             <div class="w-full md:w-1/4 md:pl-2 pb-4 md:pb-0">
@@ -111,11 +109,9 @@
               <div class="flex items-center border rounded py-2 px-3">
                 <input
                   id="contract_royalties"
-                  v-model="royalties"
+                  v-model.number="royalties"
                   class="appearance-none bg-transparent border-none w-full mr-3 focus:outline-none"
-                  type="text"
-                  placeholder="Jane Doe"
-                  aria-label="Full name"
+                  type="number"
                 />
                 <span class="flex-shrink-0 text-sm" type="button"> % </span>
               </div>
