@@ -8,7 +8,7 @@
     "
   >
     <div
-      class="text-gray-500 max-w-screen-xl mx-auto py-2 px-4 sm:px-6 lg:px-8 lg:flex lg:items-center lg:justify-between"
+      class="text-gray-500 max-w-screen-lg mx-auto py-2 px-4 sm:px-6 lg:px-8 lg:flex lg:items-center lg:justify-between"
     >
       <div class="flex items-center justify-between">
         <nuxt-link
