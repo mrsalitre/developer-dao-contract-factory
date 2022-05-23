@@ -8,7 +8,7 @@
       >
         <div class="col-auto pb-4 md:pb-0">
           <div class="flex flex-col justify-between h-full">
-            <label for="first_name" class="text-xl font-bold text-gray-500"
+            <label class="text-xl font-bold text-gray-500"
               >Image</label
             >
             <label
@@ -43,22 +43,16 @@
               class="h-48 rounded cursor-pointer object-cover"
               @click="previewImage = null"
             />
-            <!-- <div
-                id="first_name"
-                type="text"
-                class="border h-full rounded py-2 px-3"
-                name="first_name"
-              /> -->
           </div>
         </div>
         <div class="flex flex-col justify-between h-full col-span-3">
           <div class="flex flex-wrap">
             <div class="w-full md:w-2/3 pb-4 md:pb-0">
-              <label for="first_name" class="text-xl font-bold text-gray-500"
+              <label for="contract_name" class="text-xl font-bold text-gray-500"
                 >Name</label
               >
               <input
-                id="first_name"
+                id="contract_name"
                 v-model="collectionName"
                 type="text"
                 class="border w-full rounded py-2 px-3"
@@ -66,11 +60,11 @@
               />
             </div>
             <div class="w-full md:w-1/3 md:pl-2 pb-4">
-              <label for="first_name" class="text-xl font-bold text-gray-500"
+              <label for="contract_symbol" class="text-xl font-bold text-gray-500"
                 >Symbol</label
               >
               <input
-                id="first_name"
+                id="contract_symbol"
                 v-model="shortName"
                 type="text"
                 class="border w-full rounded py-2 px-3"
@@ -79,11 +73,11 @@
             </div>
           </div>
           <div class="flex flex-col justify-between h-full pb-4 md:pb-0">
-            <label for="first_name" class="text-xl font-bold text-gray-500"
+            <label for="contract_description" class="text-xl font-bold text-gray-500"
               >Description</label
             >
             <textarea
-              id="first_name"
+              id="contract_description"
               v-model="description"
               type="text"
               class="border w-full rounded py-2 px-3 h-48 md:h-full"
@@ -94,11 +88,11 @@
         <div class="flex flex-col justify-between h-full md:mt-2 col-span-4">
           <div class="flex flex-wrap">
             <div class="w-full md:w-3/4 pb-4 md:pb-0">
-              <label for="first_name" class="text-xl font-bold text-gray-500"
+              <label for="contract_owner" class="text-xl font-bold text-gray-500"
                 >Payee´s Address</label
               >
               <input
-                id="first_name"
+                id="contract_owner"
                 v-model="royaltiesAddress"
                 type="text"
                 class="border w-full rounded py-2 px-3"
@@ -106,11 +100,12 @@
               />
             </div>
             <div class="w-full md:w-1/4 md:pl-2 pb-4 md:pb-0">
-              <label for="first_name" class="text-xl font-bold text-gray-500"
+              <label for="contract_royalties" class="text-xl font-bold text-gray-500"
                 >Royalties</label
               >
               <div class="flex items-center border rounded py-2 px-3">
                 <input
+                  id="contract_royalties"
                   v-model="royalties"
                   class="appearance-none bg-transparent border-none w-full mr-3 focus:outline-none"
                   type="text"
@@ -124,9 +119,10 @@
         </div>
         <div class="mt-3 col-span-4">
           <button
+            @click="createCustomContract()"
             class="bg-white border mx-0 mb-0 py-2 px-2 w-full rounded shadow-md hover:shadow-none"
           >
-            Create Contract
+            {{ creatingContract ? 'Creating Contract...' : 'Create Contract' }}
           </button>
         </div>
       </div>
@@ -137,7 +133,7 @@
 <script>
 import { ethers } from 'ethers'
 import { mapState } from 'vuex'
-import abi from '~/static/generatedAbi.json'
+import abi from '~/static/abi.json'
 
 export default {
   name: 'CreateContract',
@@ -148,12 +144,12 @@ export default {
       description: '',
       royalties: 3,
       royaltiesAddress: '',
-      collectionUrl: '',
+      // collectionUrl: '',
       previewImage: '',
       rawImage: undefined,
       contractURI: '',
       creatingContract: false,
-      contractDeployed: null,
+      contractDeploy: null,
       DDContractFactory: null,
     }
   },
@@ -162,9 +158,6 @@ export default {
       user: (state) => state.user.accountAddress,
       factoryAddress: (state) => state.factoryAddress,
     }),
-    computedRoyalties() {
-      return this.royalties * 100
-    },
   },
   watch: {
     royalties(val) {
@@ -182,14 +175,18 @@ export default {
   methods: {
     async setContract() {
       if (this.$web3Modal.cachedProvider) {
-        const provider = await this.$web3Modal.connect()
-        const instance = new ethers.providers.Web3Provider(provider)
-        const signer = instance.getSigner()
-        this.DDContractFactory = new ethers.Contract(
-          this.factoryAddress,
-          abi,
-          signer
-        )
+        try {
+          const provider = await this.$web3Modal.connect()
+          const instance = new ethers.providers.Web3Provider(provider)
+          const signer = instance.getSigner()
+          this.DDContractFactory = new ethers.Contract(
+            this.factoryAddress,
+            abi,
+            signer
+          )
+        } catch (error) {
+          console.log(error)
+        }
       } else {
         console.log('No cached provider')
       }
@@ -199,37 +196,36 @@ export default {
       try {
         ethers.utils.getAddress(this.royaltiesAddress)
         await this.uploadContractDataToIPFS()
-        this.contractDeployed = await this.DDContractFactory.deployERC721(
+        this.contractDeploy = await this.DDContractFactory.deployERC721(
           this.collectionName,
           this.shortName,
           this.$store.state.user.accountAddress,
           this.contractURI
         )
-        const response = await this.contractDeployed.wait()
-        this.creatingContract = false
-        this.$router.push(`/confirm/${response.transactionHash}`)
+        // const response = await this.contractDeploy.wait()
+        await this.contractDeploy.wait()
+        this.creatingContract = false 
+        // this.$router.push(`/confirm/${response.transactionHash}`)
       } catch (error) {
+        console.log(error)
         this.creatingContract = false
       }
     },
     async uploadContractDataToIPFS() {
       const imageCID = await this.addToIpfs(this.rawImage)
       const image = `https://ipfs.io/ipfs/${imageCID}`
-      // const image =
-      //   'https://firebasestorage.googleapis.com/v0/b/yoruba-dao-db.appspot.com/o/ordersImages%2Fb3ZJEyra1qSg03dVxQon%2Fb3ZJEyra1qSg03dVxQon?alt=media&token=8f922c3f-9fb9-4a32-b149-0c711cb39da4'
-      const royalties = this.computedRoyalties
+      const royalties = this.royalties * 100
       const metaObj = {
         name: this.collectionName,
         description: this.description,
         image,
-        external_link: `${this.collectionUrl}`,
+        // external_link: `${this.collectionUrl}`,
         seller_fee_basis_points: royalties,
         fee_recipient: this.royaltiesAddress,
       }
       const jsonObj = JSON.stringify(metaObj)
       const CID = await this.addToIpfs(jsonObj)
       this.contractURI = `https://ipfs.io/ipfs/${CID}`
-      console.log(this.contractURI)
     },
     async addToIpfs(content) {
       const CID = await this.$ipfs(content)
