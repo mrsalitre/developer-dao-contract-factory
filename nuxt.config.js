@@ -15,7 +15,7 @@ export default {
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
-  css: [],
+  css: ['~/assets/main.css'],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: ['~/plugins/web3modal.client.js', '~/plugins/ipfs.client.js'],
@@ -43,6 +43,11 @@ export default {
     manifest: {
       lang: 'en',
     },
+  },
+
+  pageTransition: {
+    name: 'page',
+    mode: 'out-in',
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
