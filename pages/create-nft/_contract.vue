@@ -188,6 +188,7 @@ export default {
         )
       } else {
         console.log('No cached provider')
+        this.$router.push("/")
       }
     },
     async uploadNFTDataToIPFS() {
@@ -252,11 +253,12 @@ export default {
       try {
         await this.setContract()
         await this.uploadNFTDataToIPFS()
-        this.contractDeploy = await this.DDFactoryContract.mint(this.listToMint)
+        this.contractDeploy = await this.DDFactoryContract.safeMint(this.currentAccount ,this.listToMint)
         const response = await this.contractDeploy.wait()
         this.minting = false
         this.$router.push(`/confirm/${response.transactionHash}`)
       } catch (error) {
+        console.log(error)
         this.minting = false
       }
     },

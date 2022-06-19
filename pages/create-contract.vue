@@ -189,6 +189,7 @@ export default {
         }
       } else {
         console.log('No cached provider')
+        this.$router.push("/")
       }
     },
     async createCustomContract() {
@@ -196,11 +197,11 @@ export default {
       try {
         ethers.utils.getAddress(this.royaltiesAddress)
         await this.uploadContractDataToIPFS()
-        this.contractDeploy = await this.DDContractFactory.deployERC721(
+        this.contractDeploy = await this.DDContractFactory.createDDERC721(
           this.collectionName,
           this.shortName,
-          this.$store.state.user.accountAddress,
-          this.contractURI
+          this.contractURI,
+          "0x58807baD0B376efc12F5AD86aAc70E78ed67deaE"
         )
         const response = await this.contractDeploy.wait()
         this.creatingContract = false
