@@ -85,15 +85,15 @@ import abi from '~/static/abi.json'
 
 export default {
   name: 'IndexPage',
-  async mounted() {
-    if (this.$web3Modal.cachedProvider) await this.setContract()
-  },
   computed: {
     ...mapState({
       user: (state) => state.user.accountAddress,
       factoryAddress: (state) => state.factoryAddress,
       generatedContracts: (state) => state.user.contracts,
     }),
+  },
+  async mounted() {
+    if (this.$web3Modal.cachedProvider) await this.setContract()
   },
   methods: {
     async setContract() {

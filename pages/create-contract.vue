@@ -188,6 +188,10 @@ export default {
       signer: null,
     }
   },
+  mounted() {
+    this.setContract()
+    this.royaltiesAddress = this.user
+  },
   computed: {
     ...mapState({
       user: (state) => state.user.accountAddress,
@@ -203,10 +207,6 @@ export default {
         this.royalties = 0
       }
     },
-  },
-  mounted() {
-    this.setContract()
-    this.royaltiesAddress = this.user
   },
   methods: {
     async setContract() {

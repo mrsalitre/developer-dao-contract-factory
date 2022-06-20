@@ -134,7 +134,7 @@
         <div class="mt-3 col-span-4">
           <button
             class="bg-white hover:bg-transparent border mx-0 mb-0 py-2 px-2 w-full rounded shadow-md hover:shadow-none"
-            @click="mintNFT()"
+            @click="gasLessMint()"
           >
             {{ minting ? 'Creating NFT...' : 'Create NFT' }}
           </button>
@@ -148,6 +148,38 @@
 import { mapState } from 'vuex'
 import { ethers } from 'ethers'
 import abi from '~/static/generatedAbi.json'
+import ForwarderAbi from '~/static/forwarderABI.json'
+
+const EIP712Domain = [
+  { name: 'name', type: 'string' },
+  { name: 'version', type: 'string' },
+  { name: 'chainId', type: 'uint256' },
+  { name: 'verifyingContract', type: 'address' }
+]
+
+const ForwardRequest = [
+  { name: 'from', type: 'address' },
+  { name: 'to', type: 'address' },
+  { name: 'value', type: 'uint256' },
+  { name: 'gas', type: 'uint256' },
+  { name: 'nonce', type: 'uint256' },
+  { name: 'data', type: 'bytes' }
+]
+
+const TypedData = {
+  types: {
+    EIP712Domain,
+    ForwardRequest,
+  },
+  domain: {
+    name: 'MinimalForwarder',
+    version: '0.0.1',
+    chainId: 4,
+    verifyingContract: '0x3424E811eaeeD59CE5Fb7A09EA3473f8c27896eE',
+  },
+  primaryType: 'ForwardRequest',
+  message: {}
+};
 
 export default {
   name: 'CreateNft',
@@ -168,23 +200,33 @@ export default {
       minting: false,
       listToMint: [],
       DDFactoryContract: undefined,
+      forwarderContract: null,
+      provider: null,
+      signer: null,
     }
   },
   computed: {
     ...mapState({
-      currentAccount: (state) => state.user.accountAddress,
+      user: (state) => state.user.accountAddress,
+      forwarder: (state) => state.forwarderAddress,
     }),
+  },
+  mounted() {
+    this.setContract()
   },
   methods: {
     async setContract() {
       if (this.$web3Modal.cachedProvider) {
-        const provider = await this.$web3Modal.connect()
-        const instance = new ethers.providers.Web3Provider(provider)
-        const signer = instance.getSigner()
+        const instance = await this.$web3Modal.connect()
+        this.provider = new ethers.providers.Web3Provider(instance)
+        this.signer = this.provider.getSigner()
+        
+        this.forwarderContract = new ethers.Contract(this.forwarder, ForwarderAbi, this.provider);
+
         this.DDFactoryContract = new ethers.Contract(
           this.$route.params.contract,
           abi,
-          signer
+          this.signer
         )
       } else {
         console.log('No cached provider')
@@ -248,12 +290,65 @@ export default {
         this.previewVideo = URL.createObjectURL(e.target.files[0])
       }
     },
+    async gasLessMint() {
+      this.minting = true
+      try {
+        await this.uploadNFTDataToIPFS()
+
+        const nonce = await this.forwarderContract.getNonce(this.user).then(nonce => nonce.toString());
+
+        // Encode meta-tx request
+        const factoryInterface = new ethers.utils.Interface(abi);
+        const data = factoryInterface.encodeFunctionData('safeMint', [
+          this.user,
+          this.listToMint
+        ]);
+        const request = {
+          from: this.user,
+          to: this.$route.params.contract,
+          value: 0,
+          gas: 1e6,
+          nonce,
+          data
+        };
+        const toSign = { ...TypedData, message: request };
+
+        // Directly call the JSON RPC interface, since ethers does not support signTypedDataV4 yet
+        // See https://github.com/ethers-io/ethers.js/issues/830
+        const signature = await this.provider.send('eth_signTypedData_v4', [this.user, JSON.stringify(toSign)]);
+
+        console.log(JSON.stringify({ request, signature }))
+
+        const valid = await this.forwarderContract.verify(request, signature);
+
+        console.log(valid)
+
+        const response = await fetch('https://api.defender.openzeppelin.com/autotasks/bf6afdc7-7033-4c87-b15b-7baba971e66d/runs/webhook/a149c5ed-8b42-4b6f-89f0-2e2185926fd7/YKVKcfWKRqAJZcmtdBFeHU', {
+          method: 'POST', 
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ request, signature })
+        })
+
+        const jsonResponse = await response.json()
+        if (jsonResponse.result) {
+          const txHash = JSON.parse(jsonResponse.result).txHash
+          this.minting = false
+          this.$router.push(`/confirm/${txHash}`)
+        } else {
+          await this.mintNFT()
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    },
     async mintNFT() {
       this.minting = true
       try {
         await this.setContract()
-        await this.uploadNFTDataToIPFS()
-        this.contractDeploy = await this.DDFactoryContract.safeMint(this.currentAccount ,this.listToMint)
+        if (!this.listToMint.length) {
+          await this.uploadNFTDataToIPFS()
+        }
+        this.contractDeploy = await this.DDFactoryContract.safeMint(this.user ,this.listToMint)
         const response = await this.contractDeploy.wait()
         this.minting = false
         this.$router.push(`/confirm/${response.transactionHash}`)
