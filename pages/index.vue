@@ -44,18 +44,18 @@
             <div class="flex flex-col justify-between h-full px-2 py-3">
               <div class="pb-3">
                 <p class="text-xl font-bold text-gray-500 overflow-scroll">
-                  {{ contract[0] }}
+                  {{ contract[2] }}
                 </p>
               </div>
               <div class="flex justify-between text-gray-500">
                 <nuxt-link
-                  :to="`/edit-contract/${contract[2]}`"
+                  :to="`/edit-contract/${contract[3]}`"
                   class="bg-white border py-2 px-2 w-auto rounded shadow-md hover:shadow-none"
                 >
                   Edit
                 </nuxt-link>
                 <nuxt-link
-                  :to="`/create-nft/${contract[2]}`"
+                  :to="`/create-nft/${contract[3]}`"
                   class="bg-white border py-2 px-2 w-auto rounded shadow-md hover:shadow-none"
                 >
                   Create NFT
@@ -85,15 +85,15 @@ import abi from '~/static/abi.json'
 
 export default {
   name: 'IndexPage',
-  async mounted() {
-    if (this.$web3Modal.cachedProvider) await this.setContract()
-  },
   computed: {
     ...mapState({
       user: (state) => state.user.accountAddress,
       factoryAddress: (state) => state.factoryAddress,
       generatedContracts: (state) => state.user.contracts,
     }),
+  },
+  async mounted() {
+    if (this.$web3Modal.cachedProvider) await this.setContract()
   },
   methods: {
     async setContract() {
@@ -103,7 +103,7 @@ export default {
         const signer = instance.getSigner()
         const currentAddress = await signer.getAddress()
         const factoryContract = new ethers.Contract(
-          '0xF9D86FCe2af1d294778f0F866c86762A71B06572',
+          this.factoryAddress,
           abi,
           signer
         )

@@ -121,7 +121,7 @@
         <div class="mt-3 col-span-4">
           <button
             class="bg-white hover:bg-transparent border mx-0 mb-0 py-2 px-2 w-full rounded shadow-md hover:shadow-none"
-            @click="createCustomContract()"
+            @click="createGasLessContract()"
           >
             {{ creatingContract ? 'Creating Contract...' : 'Create Contract' }}
           </button>
@@ -135,6 +135,38 @@
 import { ethers } from 'ethers'
 import { mapState } from 'vuex'
 import abi from '~/static/abi.json'
+import ForwarderAbi from '~/static/forwarderABI.json'
+
+const EIP712Domain = [
+  { name: 'name', type: 'string' },
+  { name: 'version', type: 'string' },
+  { name: 'chainId', type: 'uint256' },
+  { name: 'verifyingContract', type: 'address' }
+]
+
+const ForwardRequest = [
+  { name: 'from', type: 'address' },
+  { name: 'to', type: 'address' },
+  { name: 'value', type: 'uint256' },
+  { name: 'gas', type: 'uint256' },
+  { name: 'nonce', type: 'uint256' },
+  { name: 'data', type: 'bytes' }
+]
+
+const TypedData = {
+  types: {
+    EIP712Domain,
+    ForwardRequest,
+  },
+  domain: {
+    name: 'MinimalForwarder',
+    version: '0.0.1',
+    chainId: 4,
+    verifyingContract: '0x3424E811eaeeD59CE5Fb7A09EA3473f8c27896eE',
+  },
+  primaryType: 'ForwardRequest',
+  message: {}
+};
 
 export default {
   name: 'CreateContract',
@@ -151,12 +183,20 @@ export default {
       creatingContract: false,
       contractDeploy: null,
       DDContractFactory: null,
+      forwarderContract: null,
+      provider: null,
+      signer: null,
     }
+  },
+  mounted() {
+    this.setContract()
+    this.royaltiesAddress = this.user
   },
   computed: {
     ...mapState({
       user: (state) => state.user.accountAddress,
       factoryAddress: (state) => state.factoryAddress,
+      forwarder: (state) => state.forwarderAddress,
     }),
   },
   watch: {
@@ -168,39 +208,98 @@ export default {
       }
     },
   },
-  mounted() {
-    this.setContract()
-    this.royaltiesAddress = this.user
-  },
   methods: {
     async setContract() {
       if (this.$web3Modal.cachedProvider) {
         try {
-          const provider = await this.$web3Modal.connect()
-          const instance = new ethers.providers.Web3Provider(provider)
-          const signer = instance.getSigner()
+          const instance = await this.$web3Modal.connect()
+          this.provider = new ethers.providers.Web3Provider(instance)
+          this.signer = this.provider.getSigner()
+
+          // const network = await this.provider.getNetwork();
+          // if (network.chainId !== 4) throw new Error(`Must be connected to Rinkeby`);
+
+          this.forwarderContract = new ethers.Contract(this.forwarder, ForwarderAbi, this.provider);
+
           this.DDContractFactory = new ethers.Contract(
             this.factoryAddress,
             abi,
-            signer
+            this.signer
           )
         } catch (error) {
           console.log(error)
         }
       } else {
         console.log('No cached provider')
+        this.$router.push("/")
+      }
+    },
+    async createGasLessContract() {
+      this.creatingContract = true
+      try {
+        ethers.utils.getAddress(this.royaltiesAddress)
+        await this.uploadContractDataToIPFS()
+
+        const nonce = await this.forwarderContract.getNonce(this.user).then(nonce => nonce.toString());
+
+        // Encode meta-tx request
+        const factoryInterface = new ethers.utils.Interface(abi);
+        const data = factoryInterface.encodeFunctionData('createDDERC721', [
+          this.collectionName,
+          this.shortName,
+          this.contractURI,
+          "0x58807baD0B376efc12F5AD86aAc70E78ed67deaE"
+        ]);
+        const request = {
+          from: this.user,
+          to: this.factoryAddress,
+          value: 0,
+          gas: 1e6,
+          nonce,
+          data
+        };
+        const toSign = { ...TypedData, message: request };
+
+        // Directly call the JSON RPC interface, since ethers does not support signTypedDataV4 yet
+        // See https://github.com/ethers-io/ethers.js/issues/830
+        const signature = await this.provider.send('eth_signTypedData_v4', [this.user, JSON.stringify(toSign)]);
+
+        console.log(JSON.stringify({ request, signature }))
+
+        const valid = await this.forwarderContract.verify(request, signature);
+
+        console.log(valid)
+
+        const response = await fetch('https://api.defender.openzeppelin.com/autotasks/bf6afdc7-7033-4c87-b15b-7baba971e66d/runs/webhook/a149c5ed-8b42-4b6f-89f0-2e2185926fd7/YKVKcfWKRqAJZcmtdBFeHU', {
+          method: 'POST', 
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ request, signature })
+        })
+
+        const jsonResponse = await response.json()
+        if (jsonResponse.result) {
+          const txHash = JSON.parse(jsonResponse.result).txHash
+          this.creatingContract = false
+          this.$router.push(`/confirm/${txHash}`)
+        } else {
+          await this.createCustomContract()
+        }
+      } catch (error) {
+        console.log(error)
       }
     },
     async createCustomContract() {
       this.creatingContract = true
       try {
         ethers.utils.getAddress(this.royaltiesAddress)
-        await this.uploadContractDataToIPFS()
-        this.contractDeploy = await this.DDContractFactory.deployERC721(
+        if (!this.contractURI) {
+          await this.uploadContractDataToIPFS()
+        }
+        this.contractDeploy = await this.DDContractFactory.createDDERC721(
           this.collectionName,
           this.shortName,
-          this.$store.state.user.accountAddress,
-          this.contractURI
+          this.contractURI,
+          "0x58807baD0B376efc12F5AD86aAc70E78ed67deaE"
         )
         const response = await this.contractDeploy.wait()
         this.creatingContract = false

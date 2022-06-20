@@ -45,11 +45,11 @@ export default {
         const network = await this.provider.getNetwork()
         await this.checkNetwork(Number(network.chainId))
 
-        const resolver = await this.provider.lookupAddress(
-          this.instance.selectedAddress
-        )
+        // const resolver = await this.provider.lookupAddress(
+        //   this.instance.selectedAddress
+        // )
 
-        this.$store.commit('user/SET_ACCOUNT_ENS', resolver)
+        // this.$store.commit('user/SET_ACCOUNT_ENS', resolver)
         this.$store.commit(
           'user/SET_ACCOUNT_ADDRESS',
           this.instance.selectedAddress

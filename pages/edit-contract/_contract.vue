@@ -168,6 +168,7 @@ export default {
         this.royaltiesAddress = data.fee_recipient
       } else {
         console.log('No cached provider')
+        this.$router.push("/")
       }
     },
     async updateCustomContract() {
