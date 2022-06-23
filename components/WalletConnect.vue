@@ -42,8 +42,8 @@ export default {
         this.instance = await this.$web3Modal.connect()
         this.provider = new ethers.providers.Web3Provider(this.instance)
 
-        const network = await this.provider.getNetwork()
-        await this.checkNetwork(Number(network.chainId))
+        // const network = await this.provider.getNetwork()
+        // await this.checkNetwork(Number(network.chainId))
 
         // const resolver = await this.provider.lookupAddress(
         //   this.instance.selectedAddress
@@ -61,9 +61,9 @@ export default {
           this.$store.commit('user/SET_ACCOUNT_ENS', resolver)
         })
 
-        this.instance.on('chainChanged', (chainID) => {
-          this.checkNetwork(Number(chainID))
-        })
+        // this.instance.on('chainChanged', (chainID) => {
+        //   this.checkNetwork(Number(chainID))
+        // })
         await this.setContract()
       } catch (error) {
         console.log(error)
@@ -83,7 +83,7 @@ export default {
     },
     checkNetwork(chainID) {
       return new Promise((resolve, reject) => {
-        if (chainID === 4) {
+        if (chainID === 137) {
           resolve()
         } else {
           alert('Please change to Rinkeby to continue')

@@ -9,9 +9,9 @@
         <p class="pb-6">
           <a
             class="underline cursor-pointer hover:text-gray-400"
-            :href="`https://rinkeby.etherscan.io/tx/${$route.params.transaction}`"
+            :href="`https://polygonscan.com/tx/${$route.params.transaction}`"
             target="_blank"
-            >Check on Etherscan
+            >Check on Polygonscan
           </a>
         </p>
         <nuxt-link
