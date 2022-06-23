@@ -7,7 +7,7 @@ const providerOptions = {
     package: WalletConnectProvider,
     options: {
       rpc: {
-        4: 'https://rinkeby.infura.io/v3/',
+        137: 'https://polygon-rpc.com/',
       },
     },
   },

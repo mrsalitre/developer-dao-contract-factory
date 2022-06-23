@@ -1,5 +1,5 @@
 // export the state
 export const state = () => ({
-  factoryAddress: '0xbdd68948D97D523623Bb15BC3747953671311B98',
-  forwarderAddress: '0x3424E811eaeeD59CE5Fb7A09EA3473f8c27896eE'
+  factoryAddress: '0x7F49574F614cBcFBFadc38DeDA01b21a36d589e9',
+  forwarderAddress: '0x300c8f0e2472EB5b17FbA6aF1b654eB65f12A980'
 })

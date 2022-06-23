@@ -161,8 +161,8 @@ const TypedData = {
   domain: {
     name: 'MinimalForwarder',
     version: '0.0.1',
-    chainId: 4,
-    verifyingContract: '0x3424E811eaeeD59CE5Fb7A09EA3473f8c27896eE',
+    chainId: 137,
+    verifyingContract: '0x300c8f0e2472EB5b17FbA6aF1b654eB65f12A980',
   },
   primaryType: 'ForwardRequest',
   message: {}
